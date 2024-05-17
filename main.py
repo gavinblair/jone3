@@ -31,4 +31,4 @@ async def generate():
 
 @app.get("/")
 async def home():
-  return {"6 Jone is running 8)"} 
+  return {"Jone is running 8)"} 
