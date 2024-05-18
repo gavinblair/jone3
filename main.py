@@ -57,14 +57,21 @@ def jone(conversation_history):
     tools = """
       TOOLS: As an assistant you have access to the following tools to help answer the user, just call them like functions:
       - {{web_search(query)}}
-      - {{start_timer(seconds)}}
+      - {{start_timer(duration)}}
       - {{play_music(query)}}
       - {{just_reply(message_to_user)}} (default)
       TOOLS: If you choose to use a tool, you don't need to say anything else.
     """
+    response = model.invoke(system_message+tools+conversation_history).content
 
+    #any tools called?
+    if "{{" in response:
+        start_of_tool = response.index("{{")
+        end_of_tool = response.index("}}")
+        tool_called = response[start_of_tool+2:end_of_tool]
+        response = f"A tool is being used: {tool_called}"
 
-    return model.invoke(system_message+tools+conversation_history).content
+    return response
 
 async def message_generator(model_name: str, messages: List[Message]):
     conversation_history =  ""
@@ -128,8 +135,18 @@ async def tags():
   return {
     "models": [
         {
-            "name": "Jone",
-            "model": "Jone3",
+          "name": "Jone3",
+          "model": "Jone3",
+          "modified_at": "2024-04-15T14:56:49.277302595-07:00",
+          "size": 7365960935,
+          "digest": "9f438cb9cd581fc025612d27f7c1a6669ff83a8bb0ed86c94fcf4c5440555697",
+          "details": {
+            "format": "gguf",
+            "family": "llama",
+            "families": null,
+            "parameter_size": "70B",
+            "quantization_level": "Q4_0"
+          }
         }
     ]
 }
