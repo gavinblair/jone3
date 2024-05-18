@@ -131,7 +131,7 @@ async def chat_endpoint(request: Request):
 
 @app.get("/api/version")
 async def version():
-    return {"3.0"}
+    return {"version": "3.0"}
 
 # @app.get("/api/tags/{url_idx}")
 # async def tags(url_idx: str = None, user: dict = {}):
