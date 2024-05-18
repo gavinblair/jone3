@@ -129,6 +129,10 @@ async def chat_endpoint(request: Request):
     #{"model":"Jone3","keep_alive":"5m","options":{},"messages":[{"role":"user","content":"\ntest","images":[]}]}
     return StreamingResponse(message_generator(chat_request.model, chat_request.messages), media_type="application/json")
 
+@app.get("/api/version")
+async def version():
+    return {"3.0"}
+
 @app.get("/api/tags")
 async def tags():
   #ListResponse
