@@ -135,9 +135,7 @@ async def version():
 
 @app.get("/api/tags")
 @app.get("/api/tags/{url_idx}")
-async def tags(
-    url_idx
-):
+async def tags(url_idx: str = None, user: dict = {}):
   #ListResponse
   return {
     "models": [
