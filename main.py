@@ -143,7 +143,7 @@ async def tags():
           "details": {
             "format": "gguf",
             "family": "llama",
-            "families": null,
+            "families": "",
             "parameter_size": "70B",
             "quantization_level": "Q4_0"
           }
