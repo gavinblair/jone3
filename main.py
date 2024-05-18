@@ -133,9 +133,10 @@ async def chat_endpoint(request: Request):
 async def version():
     return {"3.0"}
 
+# @app.get("/api/tags/{url_idx}")
+# async def tags(url_idx: str = None, user: dict = {}):
 @app.get("/api/tags")
-@app.get("/api/tags/{url_idx}")
-async def tags(url_idx: str = None, user: dict = {}):
+async def tags():
   #ListResponse
   return {
     "models": [
