@@ -69,7 +69,7 @@ def jone(conversation_history):
         start_of_tool = response.index("{{")
         end_of_tool = response.index("}}")
         tool_called = response[start_of_tool+2:end_of_tool]
-        response = f"A tool is being used: {tool_called}"
+        response = f"TOOL CALLED: {tool_called}"
 
     return response
 
@@ -134,7 +134,10 @@ async def version():
     return {"3.0"}
 
 @app.get("/api/tags")
-async def tags():
+@app.get("/api/tags/{url_idx}")
+async def tags(
+    url_idx
+):
   #ListResponse
   return {
     "models": [
