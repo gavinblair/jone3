@@ -15,11 +15,11 @@ import os
 
 app = FastAPI()
 dotenv.load_dotenv()
-cred_path = 'secret.json'
-with open(cred_path) as json_file:
-    credentials_json = json.load(json_file)
+# cred_path = 'secret.json'
+# with open(cred_path) as json_file:
+#     credentials_json = json.load(json_file)
 
-SCOPES = ['https://www.googleapis.com/auth/assistant-sdk-prototype']
+# SCOPES = ['https://www.googleapis.com/auth/assistant-sdk-prototype']
 
 # flow = InstalledAppFlow.from_client_config(credentials_json, SCOPES)
 # credentials = flow.run_local_server(port=0)
