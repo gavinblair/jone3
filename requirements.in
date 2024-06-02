@@ -1,0 +1,11 @@
+requests
+fastapi
+uvicorn
+python-dotenv
+langchain
+langchain-groq
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+grpcio
+google-assistant-sdk[samples]

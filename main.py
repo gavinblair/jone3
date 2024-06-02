@@ -9,9 +9,49 @@ from typing import List, Optional
 from langchain_groq import ChatGroq
 import dotenv
 import os
+# from google_auth_oauthlib.flow import InstalledAppFlow
+# import google.oauth2.credentials
+# from google.auth.transport.requests import Request
 
 app = FastAPI()
 dotenv.load_dotenv()
+cred_path = 'secret.json'
+with open(cred_path) as json_file:
+    credentials_json = json.load(json_file)
+
+SCOPES = ['https://www.googleapis.com/auth/assistant-sdk-prototype']
+
+# flow = InstalledAppFlow.from_client_config(credentials_json, SCOPES)
+# credentials = flow.run_local_server(port=0)
+
+# token_path = 'token.json'
+# with open(token_path, 'w') as token:
+    # token.write(credentials.to_json())
+
+# with open(token_path) as token_file:
+    # credentials_data = json.load(token_file)
+    # credentials = google.oauth2.credentials.Credentials(
+        # token=credentials_data['token'],
+        # refresh_token=credentials_data['refresh_token'],
+        # token_uri=credentials_data['_token_uri'],
+        # client_id=credentials_data['client_id'],
+        # client_secret=credentials_data['client_secret']
+    # )
+
+# Refresh credentials if expired
+# if credentials.expired and credentials.refresh_token:
+#     credentials.refresh(Request())
+#     with open(token_path, 'w') as token_file:
+#         token_file.write(credentials.to_json())
+
+# Initialize the Google Assistant
+# assistant = Assistant(credentials, 'my-device')
+
+# def send_command(command):
+#     with assistant_helpers.Conversation(assistant) as conversation:
+#         conversation.send_text_query(command)
+#         response = conversation.get_response()
+#         print('Received response: ', response)
 
 class Message(BaseModel):
     role: str
@@ -34,6 +74,16 @@ class ChatResponse(BaseModel):
     eval_count: Optional[int] = None
     eval_duration: Optional[int] = None
 
+def play_music(query):
+    print("playing music")
+    send_command(f"Play {query} on youtube music")
+    print(query)
+
+def start_timer(args):
+    print("starting timer")
+    send_command(f"set a timer: {args}")
+    print(args)
+
 def jone(conversation_history):
     """
       Here we can do things like:
@@ -41,8 +91,8 @@ def jone(conversation_history):
       - do some logical reasoning
       - generating a few responses and rating them, choosing the best one
       - web search
-      - start a timer
-      - play some music
+      - ...start a timer
+      - ...play some music
       - change the lights
       - write, test, rewrite and run code (by sending to a secure code container like agentrun)
         
@@ -69,7 +119,16 @@ def jone(conversation_history):
         start_of_tool = response.index("{{")
         end_of_tool = response.index("}}")
         tool_called = response[start_of_tool+2:end_of_tool]
-        response = f"TOOL CALLED: {tool_called}"
+        
+        tool_name = tool_called.split('(')[0].strip()
+        args = tool_called.split('(')[1].strip().rstrip(')')
+        if tool_name == "play_music":
+            play_music(args)
+            return "Playing music"
+        if tool_name == "start_timer":
+            start_timer(args)
+            return "Timer set"  
+        response = f"TOOL CALLED: {tool_name}, ARGUMENTS: {args}"
 
     return response
 
@@ -128,6 +187,17 @@ async def chat_endpoint(request: Request):
         raise HTTPException(status_code=400, detail="Invalid request body")
     #{"model":"Jone3","keep_alive":"5m","options":{},"messages":[{"role":"user","content":"\ntest","images":[]}]}
     return StreamingResponse(message_generator(chat_request.model, chat_request.messages), media_type="application/json")
+
+@app.post("/api/chat/completions", response_model=ChatResponse)
+async def chat_endpoint(request: Request):
+    try:
+        body = await request.json()
+        chat_request = ChatRequest(**body)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid request body")
+    #{"model":"Jone3","keep_alive":"5m","options":{},"messages":[{"role":"user","content":"\ntest","images":[]}]}
+    return StreamingResponse(message_generator(chat_request.model, chat_request.messages), media_type="application/json")
+
 
 @app.get("/api/version")
 async def version():
